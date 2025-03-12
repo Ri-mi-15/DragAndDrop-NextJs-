@@ -289,64 +289,67 @@ export default function Home() {
             <div className="flex items-center justify-center h-[3rem]" >
               <button className="bg-green-500 text-white px-4 py-2 rounded-md absolute w-[108px] right-[20px]" ><FaUpload className="ml-[-11px]"></FaUpload><p className="mt-[-19px] mr-[-17px] mb-[0px] ml-[0px]" >Publish</p> </button>            
             </div>
-          </div>  
-          <div className="w-1/2 mx-auto bg-blue-500 p-4 text-white mt-6 bg-white p-6 rounded-lg shadow-md relative scroll" >
-            {/* Icon in Top Left */}
-            <button className="text-[14px] rounded-[10px] mt-[-10px] w-[40px] h-[40px] absolute left-4 bg-black text-white p-2">
-              <FaUser className="text-[20px] ml-[2px]"
-              ></FaUser>
-            </button>
+          </div> 
+          <div className="flex items-center justify-center">            
+            <div className="bg-white p-4 text-white p-6 shadow-md scroll relative" >
+              {/* Icon in Top Left */}
+              <button className="text-[14px] rounded-[10px] mt-[-10px] w-[40px] h-[40px] absolute left-4 bg-black text-white p-2">
+                <FaUser className="text-[20px] ml-[2px]"
+                ></FaUser>
+              </button>
 
-            {/* Grid Layout */}            
-            {renderDivs(null)} 
+              {/* Grid Layout */}            
+              {renderDivs(null)} 
 
-            {/* Right Control Buttons */} 
-            <div className="absolute top-4 right-4 flex space-x-2">          
-              <div className="bg-black blackbox" >              
-                    <button  className="bg-black text-white p-2 rounded-[7px] ml-[4px] bg-white !text-black mt-[3px]">
-                      <FaDesktop />
+              {/* Right Control Buttons */} 
+              <div className="absolute top-4 right-4 flex space-x-2">          
+                <div className="bg-black blackbox" >              
+                      <button  className="bg-black text-white p-2 rounded-[7px] ml-[4px] bg-white !text-black mt-[3px]">
+                        <FaDesktop />
+                      </button>
+                    <button className="bg-black text-white p-2 ml-[9px] text-[18px]" >         
+                      <FaTablet />
                     </button>
-                  <button className="bg-black text-white p-2 ml-[9px] text-[18px]" >         
-                    <FaTablet />
-                  </button>
-                  <button className="bg-black text-white p-2 ml-[-5px] text-[18px]" >         
-                    <FaMobile />
-                  </button>
-              </div> 
-            </div>
-            <div id="addMdl"  className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2">
-                <div>
-                  <div className="single">
-                      <FaPlus className="mt-[20px] ml-[20px]" ></FaPlus>
-                  </div>
-                  <span className="absolute top-[74px] left-[17px]" >Single</span>
-                </div>
-                <div>
-                  <div className="stack">
-                    <div className="stack-inner"> 
-                    <FaPlus className="mt-[24px] ml-[24px]" ></FaPlus>
-                    </div>                     
-                  </div>
-                  <span className="absolute top-[74px] left-[102px]" >Stack</span>
-                </div>
-                <div>
-                  <div className="single !left-[160px]" >
-                     <span className="t-text">T</span>
-                  </div>
-                  <span className="absolute top-[74px] left-[170px]" >Note</span>
-                </div>
-                <div>
-                  <div className="divider">
-                     <div className="t-text-divider"><span className="t-text ml-[17px]" >T</span></div>
-                  </div>
-                  <span className="absolute top-[74px] left-[237px]" >Divider</span>
-                </div>                
-            </div>
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
-              <div className="addbox" onClick={openAddModal}> 
-                  <span className="ml-[21px]" ><FontAwesomeIcon icon={faTableCells} className="ml-[4px]" /><p className="mt-[-30px] ml-[53px]"  >Add</p></span> 
+                    <button className="bg-black text-white p-2 ml-[-5px] text-[18px]" >         
+                      <FaMobile />
+                    </button>
+                </div> 
               </div>
-              <span className="half-circle" ><FontAwesomeIcon className="ml-[7px] text-black text-[15px]" icon={faCircleHalfStroke} /></span><span className="text-[30px] ml-[22px]" ><FaImages /></span><span className="ml-[22px]" ><div className="rainbow"></div></span>
+              <div id="addMdl"  className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2">
+                  <div>
+                    <div className="single">
+                        <FaPlus className="mt-[20px] ml-[20px]" ></FaPlus>
+                    </div>
+                    <span className="absolute top-[74px] left-[17px]" >Single</span>
+                  </div>
+                  <div>
+                    <div className="stack">
+                      <div className="stack-inner"> 
+                      <FaPlus className="mt-[24px] ml-[24px]" ></FaPlus>
+                      </div>                     
+                    </div>
+                    <span className="absolute top-[74px] left-[102px]" >Stack</span>
+                  </div>
+                  <div>
+                    <div className="single !left-[160px]" >
+                      <span className="t-text">T</span>
+                    </div>
+                    <span className="absolute top-[74px] left-[170px]" >Note</span>
+                  </div>
+                  <div>
+                    <div className="divider">
+                      <div className="t-text-divider"><span className="t-text ml-[17px]" >T</span></div>
+                    </div>
+                    <span className="absolute top-[74px] left-[237px]" >Divider</span>
+                  </div>                
+              </div>
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
+                <div className="addbox" onClick={openAddModal}> 
+                    <span className="ml-[21px]" ><FontAwesomeIcon icon={faTableCells} className="ml-[4px]" /><p className="mt-[-30px] ml-[53px]"  >Add</p></span> 
+                </div>
+                <span className="half-circle" ><FontAwesomeIcon className="ml-[7px] text-black text-[15px] w-[16px] h-[16px]" icon={faCircleHalfStroke} /></span><span className="text-[30px] ml-[22px]" ><FaImages /></span><span className="ml-[22px]" ><div className="rainbow"></div></span>
+              </div>
+            
             </div>
           </div>
         </div>

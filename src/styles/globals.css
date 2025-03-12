@@ -132,12 +132,16 @@ body {
   cursor: pointer;
 }
 .scroll {
-  margin: 85px 185px 0px 130px;
-  height:665px;
-  border-radius:30px;
-  overflow: auto;
-  min-width: 1480px;
+  width: 1440px;
+    height: 810px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 2px #DBDBDB;
+    border-radius: 30px;
+    opacity: 1;
+    overflow: auto;
+    top: 135px;
 }
+
 .scroll::-webkit-scrollbar {
   display: none; /* Hide scrollbar in WebKit browsers */
 }
@@ -221,7 +225,7 @@ body {
   border-radius:20px;
   width:306px; 
   height:60px;
-  top: 735px;
+  top: 831px;
   position: fixed;
 }
 
