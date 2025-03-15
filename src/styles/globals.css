@@ -35,10 +35,10 @@ body {
 }
 
 .rainbow {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   background: url(https://tse2.mm.bing.net/th?id=OIP.uanvEodQ_aqzBhNjxauYIgHaHa&pid=Api&P=0&h=180);
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 .layerGroup{
@@ -51,7 +51,7 @@ body {
 
 .half-circle{
     background: white;
-    border-radius: 6px;
+    border-radius: 10px;
     width: 28px;
     height: 28px;
     transform: matrix(-1, 0, 0, -1, 0, 0);
@@ -127,14 +127,12 @@ body {
    width: 134px;
   border-radius: 10px;
   font-size: 20px;
-  margin-left: -20px;
   height:44px; margin-right: 10px;
   cursor: pointer;
 }
 .scroll {
   width: 1440px;
     height: 810px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 2px #DBDBDB;
     border-radius: 30px;
     opacity: 1;
@@ -231,13 +229,13 @@ body {
 
 .add-modal{
   bottom: 85px;
-  width: 306px;
+  width: 295px;
   height: 99px;
   background: #000000 0% 0% no-repeat padding-box;
   border-radius: 12px;
   display: none;
   position: fixed;
-  top: 630px;
+  top: 724px;
 }
 
 .single{
@@ -274,10 +272,8 @@ body {
 
 .t-text{
   font-size: 24px;
-  margin-left: 22px;
-  top: 11px;
-  position: absolute;
   font-family: emoji;
+  margin-top: 12px;
 }
 
 .divider{

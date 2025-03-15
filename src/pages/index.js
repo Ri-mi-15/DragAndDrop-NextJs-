@@ -7,26 +7,36 @@ import {FaDesktop, FaUser, FaUpload, FaSave, FaBars, FaArrowLeft, FaImages, FaMo
 
 export default function Home() {  
   const [divs, setDivs] = useState([
-    { id: "parent-1", parentDivId: null, className: "grid grid-cols-6 MdlDropTarget mt-[95px] ml-[150px]"},
+    { id: "parent-1", parentDivId: null, className: "grid grid-cols-6 MdlDropTarget"},
 
     { id: "parent-2", parentDivId: "parent-1", className: "grid grid-rows-2 gap-4 pl-[10px] auto-rows-[minmax(0,1fr)]" },
-    { id: "drag-1", parentDivId: "parent-2", className: "relative justify-center items-center flex bg-gray-200 rounded-lg h-32 square-box", style: {} },
-    { id: "drag-2", parentDivId: "parent-2", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 square-box", style: {} },
+    { id: "ph-1", parentDivId: "parent-2", className: "relative justify-center items-center flex bg-gray-200 rounded-lg h-32 square-box", style: {} },
+    { id: "ph-2", parentDivId: "parent-2", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 square-box", style: {} },
     
     { id: "parent-3", parentDivId: "parent-1", className: "h-s", style: {} },
-    { id: "drag-3", parentDivId: "parent-3", className: "rounded-lg h-32 flex items-center justify-center square-box DropTarget bg-[#3D8641]", draggable: true  },
+    { id: "drag-1", parentDivId: "parent-3", className: "rounded-lg h-32 flex items-center justify-center square-box DropTarget bg-[#3D8641]", draggable: true  },
 
     { id: "parent-4", parentDivId: "parent-1", className: "h-s", style: {} },
-    { id: "drag-4", parentDivId: "parent-4", className: "bg-gray-200 rounded-lg h-32 justify-center items-center flex square-box", style: {} },
+    { id: "ph-3", parentDivId: "parent-4", className: "bg-gray-200 rounded-lg h-32 justify-center items-center flex square-box", style: {} },
 
     { id: "parent-5", parentDivId: "parent-1", className: "", style: {} },
-    { id: "drag-5", parentDivId: "parent-5", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 rectangle-box", style: {} },
+    { id: "ph-4", parentDivId: "parent-5", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 rectangle-box", style: {} },
 
     { id: "parent-6", parentDivId: "parent-1", className: "h-r", style: {} },
-    { id: "drag-6", parentDivId: "parent-6", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 col-span-2 long-rectangle", style: {} },
+    { id: "ph-5", parentDivId: "parent-6", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 col-span-2 long-rectangle", style: {} },
 
-    { id: "drag-7", parentDivId: "parent-1", className: "bg-[#5691E8] rounded-lg justify-center items-center flex h-32 col-start-2 col-span-2 ph DropTarget", newclass: "bg-gray-200 sph col-span-2 ph", draggable: true },
+    { id: "drag-2", parentDivId: "parent-1", className: "bg-[#5691E8] rounded-lg justify-center items-center flex h-32 col-start-2 col-span-2 ph DropTarget", newclass: "bg-[#5691E8] sph col-span-2 ph", draggable: true },
   ]);
+
+  const updateElement = (targetId, key, value) => {
+    setDivs((prevElements) =>
+      prevElements.map((item) =>
+        item.id === targetId
+          ? { ...item, [key]: value } 
+          : item
+      )
+    );
+  };
 
   const [counter, setCounter] = useState(8);
 
@@ -48,14 +58,44 @@ export default function Home() {
 
     const renderDivs = (parentId) => {
       return divs
-        .filter((div) => div.parentDivId === parentId) // Get children of current parent
-        .map((div) => (
-          <div key={div.id} id={div.id} className={div.className} style={div.style} draggable={div.draggable || false} >
-           
-            {/* Recursively render child divs */}
-            {renderDivs(div.id)}
-          </div>
-        ));
+        .filter((div) => div.parentDivId === parentId && (!div.hasOwnProperty("stackparentid") || div.stackParentId === null || div.stackParentId === "")) // Get children of current parent
+        .map((div) => {
+          // Get stack divs that belong to the current div
+          const stackDivs = divs.filter((stackDiv) => stackDiv.stackparentid === div.id);
+    
+          return (
+            <div
+              key={div.id}
+              id={div.id}
+              className={div.className}
+              style={div.style}
+              newclass={div.newclass || ""}
+              draggable={div.draggable || false}
+            >
+              {/* Render stackParent elements inside this div */}
+              {stackDivs.length > 0
+                ? stackDivs.map((stackDiv) => (
+                    <div
+                      key={stackDiv.id}
+                      id={stackDiv.id}
+                      className={stackDiv.stackclassname}
+                      stackclassname = {stackDiv.stackclassname}
+                      stackparentid = {stackDiv.stackparentid}
+                      newclass = {stackDiv.newclass || ""}
+                      data-original-class = {stackDiv["data-original-class"]}
+                      data-original-parent = {stackDiv["data-original-parent"]}                     
+                      style={stackDiv.style}
+                      draggable={stackDiv.draggable || false}                      
+                    >
+                      {/* Render child divs inside stackParent */}
+                      {renderDivs(stackDiv.id)}
+                    </div>
+                  ))
+                : // If no stackParent divs exist, render normal child divs
+                  renderDivs(div.id)}
+            </div>
+          );
+        });
     };
 
   function openAddModal(){
@@ -72,7 +112,7 @@ export default function Home() {
       if (childDiv && childDiv.length > 0) {
         document.getElementById("stackMdl").classList.remove("hidden");
         Array.from(childDiv).forEach(child => {
-          if (child.getAttribute("newclass") != null)
+          if (child.getAttribute("newclass") != "")
             child.className = child.getAttribute("newclass")
           else
             child.className = child.getAttribute("data-original-class");
@@ -91,7 +131,6 @@ export default function Home() {
           if (id) {
               var parentDiv = document.getElementById(id);
               child.className = "inside bg-gray-200";
-              changingStyle(child);
               parentDiv.appendChild(child);
           }
       });      
@@ -101,6 +140,7 @@ export default function Home() {
 
   function closeStack() {
     toGetStack();
+    //renderDivs(null);
     document.querySelector("#hndIsMdl").value = "";
   }
 
@@ -108,83 +148,22 @@ export default function Home() {
       let stackMdl = document.getElementById("mdl");
       return stackMdl.contains(element);
   }
-
-  function changingStyle (draggedElement) {
-    draggedElement.style.position = "";
-    draggedElement.style.zIndex = "";
-    draggedElement.style.left = "";
-    draggedElement.style.top = "";
-  }
     
-  useEffect(() => {   
-    let offsetX = 0, offsetY = 0, isDragging = false;
-      
-    //   document.addEventListener("dblclick", (e) => {        
-    //     if ($("#stackMdl").is(":visible") && e.target.parentNode.id == "parent-100") {  
-    //       const draggable = e.target;  
-                          
-    //       isDragging = true;
-    //       offsetX = e.clientX - draggable.offsetLeft;
-    //       offsetY = e.clientY - draggable.offsetTop;
-    //       draggable.style.cursor = "grabbing";          
-    //     }
-    //   }); 
-    //   document.addEventListener("click", (e) => {        
-    //     if ($("#stackMdl").is(":visible") && e.target.parentNode.id == "parent-100") {
-    //     const draggable = e.target;  
-        
-    //     isDragging = false;
-    //     draggable.style.cursor = "grab";
-    //   }
-    // });
-      document.addEventListener("mousemove", (e) => {        
-        const stackMdl = document.getElementById("stackMdl");
-
-          if (stackMdl && getComputedStyle(stackMdl).visibility === "hidden"  && e.target.parentNode.id == "parent-100") {
-          const draggable = e.target;  
-          
-          // if (isDragging) {
-          //     draggable.style.position = "absolute";
-          //     draggable.style.left = `${e.clientX - offsetX}px`;
-          //     draggable.style.top = `${e.clientY - offsetY}px`;
-          // }
-          
-          // var modal = document.getElementById("mdl"); 
-          // const modalRect = modal.getBoundingClientRect();
-          // const elemRect = draggable.getBoundingClientRect();
-          
-          // const isOutside = (
-          //     elemRect.right < modalRect.left ||
-          //     elemRect.left > modalRect.right ||
-          //     elemRect.bottom < modalRect.top ||
-          //     elemRect.top > modalRect.bottom
-          // );
-
-          // if (isOutside) {
-          //   document.getElementById("stackMdl").style.display = "none"; 
-          //   document.body.appendChild(e.target);  
-          //   toGetStack(); 
-          // }
-        }
-      });      
-
+  useEffect(() => {         
+      var draggedElementId = "";
       document.addEventListener("dragstart", function(event) {
         if (!event.target.draggable) return;
 
         event.target.style.opacity = "0.4";
         event.dataTransfer.setData("Text", event.target.id);
-        document.querySelector("#hndBoxId").value = event.target.id;
+        draggedElementId = event.target.id;
 
-        if (event.target.getAttribute("data-original-parent") == null )
-          event.target.setAttribute("data-original-parent", event.target.parentElement.id);  
+        updateElement(event.target.id, "data-original-parent", event.target.parentElement.id);
+        updateElement(event.target.id, "data-original-class", event.target.className);        
         
-        if (event.target.getAttribute("data-original-class") == null )
-          event.target.setAttribute("data-original-class", event.target.className);  
-
         if (sessionStorage.getItem(event.target.id + "class") == null || sessionStorage.getItem(event.target.id + "class") == "undefined") 
           sessionStorage.setItem(event.target.id + "class", event.target.className); 
-
-        //window.getComputedStyle(event.target).width        
+     
       });
       
       document.addEventListener("dragend", function(event) {
@@ -194,7 +173,7 @@ export default function Home() {
       document.addEventListener("dragenter", function(event) {
         if (!event.target.draggable) return;
 
-        var draggedElementId = document.querySelector("#hndBoxId").value;
+        //var draggedElementId = document.querySelector("#hndBoxId").value;
         var draggedElementClass = document.getElementById(draggedElementId).className;
 
         if ( event.target.className.indexOf("DropTarget") !== -1 && event.target.className.indexOf("MdlDropTarget") < 0 && event.target.id != draggedElementId && draggedElementClass != "inside bg-gray-200") {
@@ -216,7 +195,6 @@ export default function Home() {
       document.addEventListener("dragleave", function(event) {
         if (!event.target.draggable) return;
 
-        var draggedElementId = document.querySelector("#hndBoxId").value;
         var draggedElementClass = document.getElementById(draggedElementId).className;
 
         if ( event.target.className.indexOf("DropTarget") !== -1 && event.target.className.indexOf("MdlDropTarget") < 0 && event.target.id != draggedElementId && draggedElementClass != "inside bg-gray-200") {
@@ -229,46 +207,42 @@ export default function Home() {
 
         event.preventDefault();   
         
-        var data = event.dataTransfer.getData("Text");
-        var draggedElement = document.getElementById(data);
+        var draggedElement = document.getElementById(draggedElementId);
         var isModal = document.querySelector("#hndIsMdl").value;
 
-        if (data != null)  {
-          if ((event.target.className.indexOf("DropTarget") !== -1 && event.target != draggedElement && event.target.className.indexOf("MdlDropTarget") < 0 && document.getElementById(data).className != "inside bg-gray-200")) {
+        if (draggedElement != null)  {
+          if ((event.target.className.indexOf("DropTarget") !== -1 && event.target != draggedElement && event.target.className.indexOf("MdlDropTarget") < 0 && draggedElement.className != "inside bg-gray-200")) {
             event.target.style.boxShadow = "";          
-            document.getElementById(data).style.opacity = "";
-
-            if (event.target.getAttribute("stackparentid") == null )
-              draggedElement.setAttribute("stackparentid", event.target.id);  
-
-            document.getElementById(data).className = "inside bg-gray-200";
-            draggedElement.setAttribute("draggable", false); 
-
-            event.target.appendChild(document.getElementById(data));
-            event.target.addEventListener("click", () => openModal(event.target.id));            
+            draggedElement.style.opacity = "";
+            
+            updateElement(draggedElement.id, "draggable", false);
+            updateElement(draggedElement.id, "stackparentid", event.target.id);
+            updateElement(draggedElement.id, "stackclassname", "inside bg-gray-200"); 
+            updateElement(draggedElement.id, "stackparentid", event.target.id);          
+            
+            event.target.addEventListener("click", () => openModal(event.target.id));              
+           
           }
           else if (event.target == draggedElement) {
             return;
           }          
-          else if (isModal == "1") { 
-            const stackMdl = document.getElementById("stackMdl");
+          // else if (isModal == "1") { 
+          //   const stackMdl = document.getElementById("stackMdl");
 
-            if (stackMdl && getComputedStyle(stackMdl).visibility === "hidden")  {              
-              draggedElement.removeAttribute("stackParentId");
-              var originalParentId = draggedElement.getAttribute("data-original-parent");
+          //   if (stackMdl && getComputedStyle(stackMdl).visibility === "hidden")  {              
+          //     draggedElement.removeAttribute("stackParentId");
+          //     var originalParentId = draggedElement.getAttribute("data-original-parent");
 
-              if (originalParentId) {
-                document.getElementById(data).className = sessionStorage.getItem(document.getElementById(data).id + "class");              
-                document.getElementById(originalParentId).appendChild(draggedElement);
-              }
-              changingStyle(draggedElement);
-              document.querySelector("#hndIsMdl").value = "";
-             }
-          }          
+          //     if (originalParentId) {
+          //       draggedElement.className = sessionStorage.getItem(document.getElementById(data).id + "class");              
+          //       document.getElementById(originalParentId).appendChild(draggedElement);
+          //     }
+          //     changingStyle(draggedElement);
+          //     document.querySelector("#hndIsMdl").value = "";
+          //    }
+          // }          
         }
-      });     
-
-
+      }); 
 }, []);
   return (   
     <div className="min-h-screen bg-gray-100 p-6" id="cer_cont"> 
@@ -282,7 +256,7 @@ export default function Home() {
               </button>
             </div>
             <div className="flex items-center justify-center h-[3rem]">
-              <div className="fa-save"><FaSave className="ml-[3px]"></FaSave></div>  
+              <div className="fa-save mr-[10px]"><FaSave className="ml-[3px]"></FaSave></div>  
               <div className="dlpad mr-[10px]">Digital Launch Pad</div>          
               <div className="fa-save  mr-[10px]"><FaBars className="ml-[3px]"></FaBars></div>  
             </div>
@@ -291,19 +265,21 @@ export default function Home() {
             </div>
           </div> 
           <div className="flex items-center justify-center">            
-            <div className="bg-white p-4 text-white p-6 shadow-md scroll relative" >
+            <div className="bg-white text-white p-6 shadow-md scroll relative" >
               {/* Icon in Top Left */}
-              <button className="text-[14px] rounded-[10px] mt-[-10px] w-[40px] h-[40px] absolute left-4 bg-black text-white p-2">
+              <button className="text-[14px] rounded-[10px] mt-[-10px] w-[40px] h-[40px] absolute left-4 bg-black text-white p-2 z-1">
                 <FaUser className="text-[20px] ml-[2px]"
                 ></FaUser>
               </button>
 
-              {/* Grid Layout */}            
-              {renderDivs(null)} 
+              {/* Grid Layout */} 
+              <div className="w-[1170px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-6 rounded-lg">
+                {renderDivs(null)} 
+              </div>
 
               {/* Right Control Buttons */} 
               <div className="absolute top-4 right-4 flex space-x-2">          
-                <div className="bg-black blackbox" >              
+                <div className="bg-black blackbox z-1" >              
                       <button  className="bg-black text-white p-2 rounded-[7px] ml-[4px] bg-white !text-black mt-[3px]">
                         <FaDesktop />
                       </button>
@@ -332,89 +308,96 @@ export default function Home() {
                   </div>
                   <div>
                     <div className="single !left-[160px]" >
-                      <span className="t-text">T</span>
+                      <span className="t-text flex items-center justify-center">T</span>
                     </div>
                     <span className="absolute top-[74px] left-[170px]" >Note</span>
                   </div>
                   <div>
                     <div className="divider">
-                      <div className="t-text-divider"><span className="t-text ml-[17px]" >T</span></div>
+                      <div className="t-text-divider"><span className="t-text flex items-center justify-center w-[50px] h-[25px]">T</span></div>
                     </div>
                     <span className="absolute top-[74px] left-[237px]" >Divider</span>
                   </div>                
               </div>
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
-                <div className="addbox" onClick={openAddModal}> 
-                    <span className="ml-[21px]" ><FontAwesomeIcon icon={faTableCells} className="ml-[4px]" /><p className="mt-[-30px] ml-[53px]"  >Add</p></span> 
+                  <div className="addbox" onClick={openAddModal}> 
+                      <p className="flex items-center justify-center" ><FontAwesomeIcon icon={faTableCells} className="w-22px h-22px" />&nbsp;&nbsp;<span>Add</span></p> 
+                  </div>
+                  <div className="half-circle m-[6px]" ><FontAwesomeIcon className="mb-[4px] text-black p-[6px]" icon={faCircleHalfStroke} /></div>
+                  <div className="text-[30px]" ><FaImages className="ml-[20px]" /></div>
+                  <div>
+                    <div className="rainbow ml-[20px]"></div>
+                  </div>                                
+              </div>            
+            </div>
+          </div>          
+        </div>     
+        <div className="flex items-center justify-center" >   
+            <div id="stackMdl"  className="text-white p-6 shadow-md !top-[207px] scroll  absolute flex items-center justify-center bg-black bg-opacity-50 hidden" >
+                <div className="bg-white top-[94px] w-[1384px] h-[716px] rounded-t-[28px]  shadow-lg w-full p-6 relative" id="mdl">
+              
+              {/* Header */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center m-[50px]">
+                  <input
+                    className="border border-gray-300 px-4 py-2 w-[191px] h-[48px] rounded-[10px]"
+                    type="text"
+                    placeholder="Add title"
+                  />
+                  <button
+                    id="btnCloseMdl"
+                    className="bg-black text-white p-2 text-lg w-[48px] h-[48px] rounded-[10px]" >
+                    <FaTimes className="ml-[7px]" />
+                  </button>
                 </div>
-                <span className="half-circle" ><FontAwesomeIcon className="ml-[7px] text-black text-[15px] w-[16px] h-[16px]" icon={faCircleHalfStroke} /></span><span className="text-[30px] ml-[22px]" ><FaImages /></span><span className="ml-[22px]" ><div className="rainbow"></div></span>
               </div>
-            
-            </div>
-          </div>
-        </div>
 
-        {/* Modal */}
-        {/* <div className="modal" id="stackMdl">
-          <div class="modal-content" id="mdl">
-            <div className="col-lg-12 mb-[30px]">
-                <div className="row">
-                  <div className="col-lg-6"><input className="modalInput" type="text" placeholder="Add title"></input></div>
-                  <div className="col-lg-6"><div className="w-[18px] h-[24px] float-right" ><button id="btnCloseMdl" className="absolute bg-black text-white p-2 text-[20px] rounded-[7px]" ><FaTimes></FaTimes></button></div></div>
-                </div> 
+              {/* Grid Section */}
+              <div className="grid grid-cols-6 gap-2 m-[50px]" id="parent-100">
+                
               </div>
-                <div className="grid grid-cols-6" id="parent-100">
-                </div>             
+
+              <div id="addMdl"  className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2">
+                  <div>
+                    <div className="single">
+                        <FaPlus className="mt-[20px] ml-[20px]" ></FaPlus>
+                    </div>
+                    <span className="absolute top-[74px] left-[17px]" >Single</span>
+                  </div>
+                  <div>
+                    <div className="stack">
+                      <div className="stack-inner"> 
+                      <FaPlus className="mt-[24px] ml-[24px]" ></FaPlus>
+                      </div>                     
+                    </div>
+                    <span className="absolute top-[74px] left-[102px]" >Stack</span>
+                  </div>
+                  <div>
+                    <div className="single !left-[160px]" >
+                      <span className="t-text flex items-center justify-center">T</span>
+                    </div>
+                    <span className="absolute top-[74px] left-[170px]" >Note</span>
+                  </div>
+                  <div>
+                    <div className="divider">
+                      <div className="t-text-divider"><span className="t-text flex items-center justify-center w-[50px] h-[25px]">T</span></div>
+                    </div>
+                    <span className="absolute top-[74px] left-[237px]" >Divider</span>
+                  </div>                
+              </div>
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
-              <div className="addbox"> 
-                  <span className="ml-[21px]"><FontAwesomeIcon icon={faTableCells} className="ml-[4px]" /><p className="m-[-30px_0_0_0] ml-[53px]" >Add</p></span> 
+                  <div className="addbox" onClick={openAddModal}> 
+                      <p className="flex items-center justify-center" ><FontAwesomeIcon icon={faTableCells} className="w-22px h-22px" />&nbsp;&nbsp;<span>Add</span></p> 
+                  </div>
+                  <div className="half-circle m-[6px]" ><FontAwesomeIcon className="mb-[4px] text-black p-[6px]" icon={faCircleHalfStroke} /></div>
+                  <div className="text-[30px]" ><FaImages className="ml-[20px]" /></div>
+                  <div>
+                    <div className="rainbow ml-[20px]"></div>
+                  </div>                                
+              </div> 
               </div>
-              <span className="half-circle" ><FontAwesomeIcon className="ml-[7px] text-black text-[15px]" icon={faCircleHalfStroke} /></span><span className="text-[30px] ml-[22px]" ><FaImages /></span><span className="ml-[22px]" ><div className="rainbow"></div></span>
-            </div>
-            </div>
-        </div> */}
-         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" id="stackMdl">
-        <   div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative" id="mdl">
-          
-          {/* Header */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center">
-              <input
-                className="border border-gray-300 rounded px-4 py-2 w-full"
-                type="text"
-                placeholder="Add title"
-              />
-              <button
-                id="btnCloseMdl"
-                className="ml-4 bg-black text-white p-2 text-lg rounded"
-              >
-                <FaTimes />
-              </button>
-            </div>
-          </div>
-
-          {/* Grid Section */}
-          <div className="grid grid-cols-6 gap-2" id="parent-100">
-            {/* Grid Content Here */}
-          </div>
-
-          {/* Bottom Action Bar */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full flex items-center space-x-4">
-            {/* Add Button */}
-            <div className="flex items-center space-x-2">
-              <FontAwesomeIcon icon={faTableCells} className="text-lg" />
-              <p className="text-sm">Add</p>
-            </div>
-
-            {/* Icons */}
-            <FontAwesomeIcon className="text-black text-lg" icon={faCircleHalfStroke} />
-            <FaImages className="text-2xl" />
-
-            {/* Rainbow Div */}
-            <div className="w-6 h-6 bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 rounded-full"></div>
-          </div>
+            </div> 
         </div>
-    </div>
-    </div> 
+    </div>     
   );
 }
