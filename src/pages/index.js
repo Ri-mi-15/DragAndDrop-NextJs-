@@ -1,80 +1,83 @@
 "use client"; 
-import { useState, useEffect} from "react";
+import { useState, useEffect, useRef} from "react";
 import Draggable from "react-draggable";
 import { faCircleHalfStroke, faTableCells } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {FaDesktop, FaUser, FaUpload, FaSave, FaBars, FaArrowLeft, FaImages, FaMobile, FaTablet, FaTimes, FaPlus} from "react-icons/fa";
+import { each } from "jquery";
 
-export default function Home() {  
-  const [divs, setDivs] = useState([
-    { id: "parent-1", parentDivId: null, className: "grid grid-cols-6 MdlDropTarget"},
+export default function Home() { 
+  const parentRef = useRef(null); 
+  const [IsModal, setIsModal] = useState("");
+  const [modalDivs, setModalDivs] = useState([]);
+  let stackDivs = [];
+  let [divs, setDivs] = useState([
+    { id: "parent-1", parentDivId: null, className: "grid grid-cols-6 MdlDropTarget", datastacked:"no", onClick: null },
 
-    { id: "parent-2", parentDivId: "parent-1", className: "grid grid-rows-2 gap-4 pl-[10px] auto-rows-[minmax(0,1fr)]" },
-    { id: "ph-1", parentDivId: "parent-2", className: "relative justify-center items-center flex bg-gray-200 rounded-lg h-32 square-box", style: {} },
-    { id: "ph-2", parentDivId: "parent-2", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 square-box", style: {} },
+    { id: "parent-2", parentDivId: "parent-1", className: "grid grid-rows-2 gap-4 pl-[10px] auto-rows-[minmax(0,1fr)]" , datastacked:"no", onClick: null },
+    { id: "ph-1", parentDivId: "parent-2", className: "relative justify-center items-center flex bg-gray-200 h-32 square-box", datastacked:"no", onClick: null },
+    { id: "ph-2", parentDivId: "parent-2", className: "bg-gray-200 justify-center items-center flex h-32 square-box", datastacked:"no", onClick: null },
     
-    { id: "parent-3", parentDivId: "parent-1", className: "h-s", style: {} },
-    { id: "drag-1", parentDivId: "parent-3", className: "rounded-lg h-32 flex items-center justify-center square-box DropTarget bg-[#3D8641]", draggable: true  },
+    { id: "parent-3", parentDivId: "parent-1", className: "h-s", datastacked:"no", onClick: null },
+    { id: "drag-1", parentDivId: "parent-3", className: "h-32 flex items-center justify-center square-box DropTarget bg-[#3D8641]", draggable:true, datastacked:"no"},
 
-    { id: "parent-4", parentDivId: "parent-1", className: "h-s", style: {} },
-    { id: "ph-3", parentDivId: "parent-4", className: "bg-gray-200 rounded-lg h-32 justify-center items-center flex square-box", style: {} },
+    { id: "parent-4", parentDivId: "parent-1", className: "h-s", datastacked:"no", onClick: null },
+    { id: "ph-6", parentDivId: "parent-4", className: " bg-gray-200 h-32 justify-center items-center flex square-box", datastacked:"no", onClick: null },
 
-    { id: "parent-5", parentDivId: "parent-1", className: "", style: {} },
-    { id: "ph-4", parentDivId: "parent-5", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 rectangle-box", style: {} },
+    { id: "parent-5", parentDivId: "parent-1", className: "", datastacked:"no", onClick: null },
+    { id: "ph-4", parentDivId: "parent-5", className: " bg-gray-200 justify-center items-center flex h-32 rectangle-box", datastacked:"no", onClick: null },
 
-    { id: "parent-6", parentDivId: "parent-1", className: "h-r", style: {} },
-    { id: "ph-5", parentDivId: "parent-6", className: "bg-gray-200 justify-center items-center flex rounded-lg h-32 col-span-2 long-rectangle", style: {} },
+    { id: "parent-6", parentDivId: "parent-1", className: "h-r", datastacked:"no", onClick: null },
+    { id: "drag-2", parentDivId: "parent-6", className: "bg-[#5691E8] justify-center items-center flex h-32 col-span-2 long-rectangle DropTarget", datastacked:"no", onClick: null, draggable:true },
 
-    { id: "drag-2", parentDivId: "parent-1", className: "bg-[#5691E8] rounded-lg justify-center items-center flex h-32 col-start-2 col-span-2 ph DropTarget", newclass: "bg-[#5691E8] sph col-span-2 ph", draggable: true },
+    { id: "ph-5", parentDivId: "parent-1", className: "bg-gray-200  justify-center items-center flex h-32 col-start-2 col-span-2 ph ", newclass: "bg-[#5691E8] sph col-span-2 ph", datastacked:"no", onClick: null },
   ]);
 
-  const updateElement = (targetId, key, value) => {
-    setDivs((prevElements) =>
-      prevElements.map((item) =>
-        item.id === targetId
-          ? { ...item, [key]: value } 
-          : item
-      )
-    );
-  };
+    const updateElement = (id, key, value) => {
+      setDivs((prevDivs) =>
+        prevDivs.map((div) =>
+          div.id === id ? { ...div, [key]: value } : div
+        )
+      );  
+    };
 
-  const [counter, setCounter] = useState(8);
+    const addClickHandler = (id) => {
+      setDivs((prevDivs) =>
+        prevDivs.map((div) =>
+          div.id === id ? { ...div, onClick: () => openModal(id) } : div
+        )
+      );
+    };
 
-  // Function to add a new parent div dynamically
-  const addParentDiv = () => {
-    const newId = `parent-${counter}`;
-    const newParent = { id: newId, parentDivId: null, className: "bg-gray-300 p-4 rounded", style: { margin: "10px" } };
-    setDivs((prevDivs) => [...prevDivs, newParent]);
-    setCounter(counter + 1); // Increment counter for next div
-  };
+    const renderModalDivs = (val) => {
+      if (val === true) {
+        const storedDivs = JSON.parse(localStorage.getItem("divs")) || [];
+        return storedDivs.filter((div) => div.datastacked === "yes");
+      }
+      return [];
+    };
 
-  // Function to add a new child div inside a specific parent
-  const addChildDiv = (parentId) => {
-    const newId = `drag-${counter}`;
-    const newChild = { id: newId, parentDivId: parentId, className: "bg-blue-200 p-2 rounded h-32 square-box", style: {} };
-    setDivs((prevDivs) => [...prevDivs, newChild]);
-    setCounter(counter + 1); // Increment counter for next div
-  };
-
-    const renderDivs = (parentId) => {
+    const renderDivs = (parentId) => {     
       return divs
-        .filter((div) => div.parentDivId === parentId && (!div.hasOwnProperty("stackparentid") || div.stackParentId === null || div.stackParentId === "")) // Get children of current parent
+        .filter((div) => div.parentDivId === parentId  && (!div.hasOwnProperty("stackparentid") || div.stackparentid === null || div.stackparentid === "")) // Get children of current parent
         .map((div) => {
           // Get stack divs that belong to the current div
-          const stackDivs = divs.filter((stackDiv) => stackDiv.stackparentid === div.id);
-    
+          stackDivs = divs.filter((stackDiv) => stackDiv.stackparentid === div.id );          
+
           return (
             <div
               key={div.id}
               id={div.id}
               className={div.className}
-              style={div.style}
               newclass={div.newclass || ""}
               draggable={div.draggable || false}
+              datastacked = {div["datastacked"]} 
+              onClick={div.onClick} 
             >
               {/* Render stackParent elements inside this div */}
-              {stackDivs.length > 0
-                ? stackDivs.map((stackDiv) => (
+              {IsModal === "" && (stackDivs.length > 0
+                ? stackDivs
+                .map((stackDiv) => (
                     <div
                       key={stackDiv.id}
                       id={stackDiv.id}
@@ -82,17 +85,17 @@ export default function Home() {
                       stackclassname = {stackDiv.stackclassname}
                       stackparentid = {stackDiv.stackparentid}
                       newclass = {stackDiv.newclass || ""}
-                      data-original-class = {stackDiv["data-original-class"]}
-                      data-original-parent = {stackDiv["data-original-parent"]}                     
-                      style={stackDiv.style}
-                      draggable={stackDiv.draggable || false}                      
+                      data-original-parent = {stackDiv["data-original-parent"]} 
+                      draggable={false}    
+                      datastacked = {stackDiv.datastacked}                  
                     >
                       {/* Render child divs inside stackParent */}
                       {renderDivs(stackDiv.id)}
                     </div>
                   ))
                 : // If no stackParent divs exist, render normal child divs
-                  renderDivs(div.id)}
+                  renderDivs(div.id)
+                )}
             </div>
           );
         });
@@ -102,64 +105,54 @@ export default function Home() {
     document.getElementById("stackMdl").classList.remove("hidden");
   }
 
-  function openModal(val) {    
-    document.querySelector("#hndIsMdl").value = "1";     
-    var close = document.getElementById("btnCloseMdl");
-    close.addEventListener("click", () => closeStack());  
-    const parentDiv = document.getElementById("parent-100");
-    if (parentDiv != null) {
-      let childDiv = document.querySelector("#" + val).childNodes;
-      if (childDiv && childDiv.length > 0) {
+  function openModal(val) {  
+    if (val != null)  {
+      if (document.getElementById(val).children.length > 0){
         document.getElementById("stackMdl").classList.remove("hidden");
-        Array.from(childDiv).forEach(child => {
-          if (child.getAttribute("newclass") != "")
-            child.className = child.getAttribute("newclass")
-          else
-            child.className = child.getAttribute("data-original-class");
 
-          parentDiv.appendChild(child);
-        });
-      }
-    }
-  }
-
-  function toGetStack(){
-    let childDiv = document.querySelector("#parent-100").childNodes;
-    if (childDiv && childDiv.length > 0) {
-        Array.from(childDiv).forEach(child => { 
-          var id = child.getAttribute("stackparentid");
-          if (id) {
-              var parentDiv = document.getElementById(id);
-              child.className = "inside bg-gray-200";
-              parentDiv.appendChild(child);
-          }
-      });      
-    }    
-    document.getElementById("stackMdl").classList.add("hidden");
+        var close = document.getElementById("btnCloseMdl");
+        close.addEventListener("click", () => closeStack());  
+    
+        setIsModal("1");
+        setModalDivs(renderModalDivs(true));
+      }      
+    }   
   }
 
   function closeStack() {
-    toGetStack();
-    //renderDivs(null);
-    document.querySelector("#hndIsMdl").value = "";
+    setIsModal("");
+    localStorage.setItem("divs", JSON.stringify(divs));
+    setModalDivs(renderModalDivs(true));
+    document.getElementById("stackMdl").classList.add("hidden");
   }
 
   function isOutsideStackMdl(element) {
       let stackMdl = document.getElementById("mdl");
       return stackMdl.contains(element);
   }
+
+   useEffect(() => {
+    localStorage.setItem("divs", JSON.stringify(divs));    
+  }, [divs]);
     
   useEffect(() => {         
       var draggedElementId = "";
+      let offsetX = 0;
+      let offsetY = 0;
+
       document.addEventListener("dragstart", function(event) {
         if (!event.target.draggable) return;
 
         event.target.style.opacity = "0.4";
-        event.dataTransfer.setData("Text", event.target.id);
-        draggedElementId = event.target.id;
+        draggedElementId = event.target.id;       
 
-        updateElement(event.target.id, "data-original-parent", event.target.parentElement.id);
-        updateElement(event.target.id, "data-original-class", event.target.className);        
+        const rect = event.target.getBoundingClientRect();
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;     
+        
+        event.target.style.position = "fixed";
+
+        updateElement(event.target.id, "data-original-parent", event.target.parentElement.id);        
         
         if (sessionStorage.getItem(event.target.id + "class") == null || sessionStorage.getItem(event.target.id + "class") == "undefined") 
           sessionStorage.setItem(event.target.id + "class", event.target.className); 
@@ -167,35 +160,46 @@ export default function Home() {
       });
       
       document.addEventListener("dragend", function(event) {
-        event.target.style.opacity = "1";          
+        event.target.style.opacity = "1";   
+        event.target.style.cursor = "grabbing";       
       });
       
       document.addEventListener("dragenter", function(event) {
         if (!event.target.draggable) return;
 
-        //var draggedElementId = document.querySelector("#hndBoxId").value;
-        var draggedElementClass = document.getElementById(draggedElementId).className;
+        var draggedElementClass = "";
+        if (draggedElementId != "")
+          draggedElementClass = document.getElementById(draggedElementId).className;
 
         if ( event.target.className.indexOf("DropTarget") !== -1 && event.target.className.indexOf("MdlDropTarget") < 0 && event.target.id != draggedElementId && draggedElementClass != "inside bg-gray-200") {
           event.target.style.boxShadow = "inset 0.5px 0.5px 2px #b8b8b8";
-        }        
-        
-        const stackMdl = document.getElementById("stackMdl");
-        var modalVisibility = getComputedStyle(stackMdl).visibility;
-        if (!isOutsideStackMdl(event.target) && stackMdl && modalVisibility === "hidden") {
-            document.body.appendChild(event.target);  
-            toGetStack();     
-        }         
+        }                
+              
       });
       
       document.addEventListener("dragover", function(event) {
-        event.preventDefault();        
+        event.preventDefault(); 
+       
+        if (window.getComputedStyle(document.getElementById("stackMdl")).display !== "none") {
+          if (!isOutsideStackMdl(event.target)){
+            setIsModal("");
+            localStorage.setItem("HndVal", "1");
+            addClickHandler(event.target.id);
+            document.getElementById("stackMdl").classList.add("hidden");
+          }
+          else{
+            document.getElementById("stackMdl").classList.remove("hidden");
+          }
+      }
+      
       });
       
       document.addEventListener("dragleave", function(event) {
         if (!event.target.draggable) return;
-
-        var draggedElementClass = document.getElementById(draggedElementId).className;
+        
+        var draggedElementClass = "";
+        if (draggedElementId != "")
+          draggedElementClass = document.getElementById(draggedElementId).className;
 
         if ( event.target.className.indexOf("DropTarget") !== -1 && event.target.className.indexOf("MdlDropTarget") < 0 && event.target.id != draggedElementId && draggedElementClass != "inside bg-gray-200") {
           event.target.style.boxShadow = "";
@@ -203,51 +207,65 @@ export default function Home() {
       });
     
       document.addEventListener("drop", function(event) {
-        if (!event.target.draggable) return;
+        event.preventDefault();           
 
-        event.preventDefault();   
+        var hndVal = localStorage.getItem("HndVal");
         
         var draggedElement = document.getElementById(draggedElementId);
-        var isModal = document.querySelector("#hndIsMdl").value;
 
         if (draggedElement != null)  {
           if ((event.target.className.indexOf("DropTarget") !== -1 && event.target != draggedElement && event.target.className.indexOf("MdlDropTarget") < 0 && draggedElement.className != "inside bg-gray-200")) {
             event.target.style.boxShadow = "";          
             draggedElement.style.opacity = "";
+
+            const match = draggedElement.className.match(/bg-[\w#\[\]-]+/);
+            const color = match ? match[0] : null;
             
-            updateElement(draggedElement.id, "draggable", false);
+            updateElement(draggedElement.id, "datastacked", "yes");
             updateElement(draggedElement.id, "stackparentid", event.target.id);
-            updateElement(draggedElement.id, "stackclassname", "inside bg-gray-200"); 
-            updateElement(draggedElement.id, "stackparentid", event.target.id);          
-            
-            event.target.addEventListener("click", () => openModal(event.target.id));              
+            updateElement(draggedElement.id, "stackclassname", "inside " + color);  
+            // updateElement(event.target.id, "draggable", "false"); 
+            addClickHandler(event.target.id);
            
-          }
+          }                           
+          else if (hndVal == "1") {               
+
+              const parentDivObj = divs.find(div => div.id === draggedElement.id);
+
+              const parentDivValue = parentDivObj ? parentDivObj.parentDivId : null;   
+              const originalClass = parentDivObj ? parentDivObj.className : null;  
+
+              draggedElement.className = originalClass;   
+
+              if (parentDivValue) {   
+                updateElement(draggedElement.id, "datastacked", "no");
+                updateElement(draggedElement.id, "stackparentid", "");   
+                updateElement(draggedElement.id, "stackclassname", "");
+              }
+              localStorage.setItem("IsPresent","");
+              localStorage.setItem("divs", JSON.stringify(divs));
+              setModalDivs(renderModalDivs(true));
+              localStorage.setItem("HndVal","");
+          } 
           else if (event.target == draggedElement) {
             return;
-          }          
-          // else if (isModal == "1") { 
-          //   const stackMdl = document.getElementById("stackMdl");
+          } 
+          else {
+            var modal = document.getElementById("stackMdl");
+            if (!modal.className.includes("hidden")) {
+              const dropX = event.clientX - offsetX;
+              const dropY = event.clientY - offsetY;
 
-          //   if (stackMdl && getComputedStyle(stackMdl).visibility === "hidden")  {              
-          //     draggedElement.removeAttribute("stackParentId");
-          //     var originalParentId = draggedElement.getAttribute("data-original-parent");
-
-          //     if (originalParentId) {
-          //       draggedElement.className = sessionStorage.getItem(document.getElementById(data).id + "class");              
-          //       document.getElementById(originalParentId).appendChild(draggedElement);
-          //     }
-          //     changingStyle(draggedElement);
-          //     document.querySelector("#hndIsMdl").value = "";
-          //    }
-          // }          
+              draggedElement.style.left = `${dropX}px`;
+              draggedElement.style.top = `${dropY}px`;
+            }
+          }           
         }
+        event.target.style.cursor= "";
       }); 
 }, []);
   return (   
     <div className="min-h-screen bg-gray-100 p-6" id="cer_cont"> 
-    <input type="hidden" id="hndBoxId" name="hndBoxId" value=""></input>
-    <input type="hidden" id="hndIsMdl" name="hndIsMdl" value=""></input>
       <div class="content" id="cer_cont1">                  
           <div className="grid grid-cols-3" >
             <div className="flex items-center justify-center h-[3rem]" >
@@ -333,8 +351,8 @@ export default function Home() {
           </div>          
         </div>     
         <div className="flex items-center justify-center" >   
-            <div id="stackMdl"  className="text-white p-6 shadow-md !top-[207px] scroll  absolute flex items-center justify-center bg-black bg-opacity-50 hidden" >
-                <div className="bg-white top-[94px] w-[1384px] h-[716px] rounded-t-[28px]  shadow-lg w-full p-6 relative" id="mdl">
+            <div id="stackMdl"  className={` text-white p-6 shadow-md !top-[207px] scroll  absolute flex items-center justify-center bg-black bg-opacity-50 hidden`} >
+                <div ref={parentRef} className="bg-white top-[94px] w-[1384px] h-[716px] rounded-t-[28px]  shadow-lg w-full p-6 relative" id="mdl">
               
               {/* Header */}
               <div className="mb-6">
@@ -346,7 +364,8 @@ export default function Home() {
                   />
                   <button
                     id="btnCloseMdl"
-                    className="bg-black text-white p-2 text-lg w-[48px] h-[48px] rounded-[10px]" >
+                    className="bg-black text-white p-2 text-lg w-[48px] h-[48px] rounded-[10px]" 
+                    onClick={() => closeStack()}>
                     <FaTimes className="ml-[7px]" />
                   </button>
                 </div>
@@ -354,10 +373,21 @@ export default function Home() {
 
               {/* Grid Section */}
               <div className="grid grid-cols-6 gap-2 m-[50px]" id="parent-100">
-                
+                {modalDivs.map((div) => (                 
+                    <div
+                      key={div.id}
+                      id={div.id}
+                      className={div.newclass || div.className}
+                      stackclassname={div.stackclassname}
+                      stackparentid={div.stackparentid}
+                      newclass={div.newclass || ""}
+                      data-original-parent={div["data-original-parent"]}
+                      draggable={true}
+                    ></div>                                
+                ))}
               </div>
 
-              <div id="addMdl"  className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2">
+              <div id="addMdl" className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2">
                   <div>
                     <div className="single">
                         <FaPlus className="mt-[20px] ml-[20px]" ></FaPlus>
