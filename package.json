@@ -15,7 +15,6 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "framer-motion": "^12.4.7",
-    "jquery": "^3.7.1",
     "next": "15.1.7",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",

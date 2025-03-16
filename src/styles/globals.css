@@ -111,15 +111,13 @@ body {
   padding-top: 10px;
 }
 .dlpad{
-  background: white;
     color: #FB1157;
     font-size: 17px;
-    padding: 7px;
-    border-radius: 9px;
-    padding-left: 20px;
-    float: right;
     width: 186px;
     height: 40px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 12px;
+    opacity: 1;
 }
 .addbox{
   background: #FB1157;
