@@ -167,13 +167,6 @@ body {
   margin-top: 0px !important; 
 }
 
-.h-s{
-  height: 165px;
-}
-.h-r{
-  height: 360px;
-}
-
 .inside{
   width: 40px;
   height: 40px;
@@ -227,7 +220,6 @@ body {
   height: 99px;
   background: #000000 0% 0% no-repeat padding-box;
   border-radius: 12px;
-  display: none;
   position: fixed;
   top: 724px;
 }
@@ -243,7 +235,7 @@ body {
 }
 
 .stack{
-  left: 83px;
+  left: 77px;
   width: 65px;
   height: 65px;
   transform: matrix(1, -0.09, 0.09, 1, 0, 0);
@@ -275,7 +267,7 @@ body {
   height: 60px;
   background: #26282B 0% 0% no-repeat padding-box;
   border-radius: 10px;
-  left: 233px !important;
+  left: 218px !important;
   position: absolute;
   top: 10px;
 }

@@ -12,23 +12,23 @@ export default function Home() {
   let [divs, setDivs] = useState([
     { id: "parent-1", parentDivId: null, className: "grid grid-cols-6 MdlDropTarget", datastacked:"no", onClick: null },
 
-    { id: "parent-2", parentDivId: "parent-1", className: "grid grid-rows-2 gap-4 pl-[10px] auto-rows-[minmax(0,1fr)]" , datastacked:"no", onClick: null },
+    { id: "parent-2", parentDivId: "parent-1", className: "grid grid-rows-2 gap-4 auto-rows-[minmax(0,1fr)]" , datastacked:"no", onClick: null },
     { id: "ph-1", parentDivId: "parent-2", className: "relative justify-center items-center flex bg-gray-200 h-32 square-box", datastacked:"no", onClick: null },
     { id: "ph-2", parentDivId: "parent-2", className: "bg-gray-200 justify-center items-center flex h-32 square-box", datastacked:"no", onClick: null },
     
-    { id: "parent-3", parentDivId: "parent-1", className: "h-s", datastacked:"no", onClick: null },
+    { id: "parent-3", parentDivId: "parent-1", className: "", datastacked:"no", onClick: null },
     { id: "drag-1", parentDivId: "parent-3", className: "h-32 flex items-center justify-center square-box DropTarget bg-[#3D8641]", draggable:true, datastacked:"no"},
 
-    { id: "parent-4", parentDivId: "parent-1", className: "h-s", datastacked:"no", onClick: null },
+    { id: "parent-4", parentDivId: "parent-1", className: "", datastacked:"no", onClick: null },
     { id: "ph-6", parentDivId: "parent-4", className: " bg-gray-200 h-32 justify-center items-center flex square-box", datastacked:"no", onClick: null },
 
     { id: "parent-5", parentDivId: "parent-1", className: "", datastacked:"no", onClick: null },
-    { id: "ph-4", parentDivId: "parent-5", className: " bg-gray-200 justify-center items-center flex h-32 rectangle-box", datastacked:"no", onClick: null },
+    { id: "ph-4", parentDivId: "parent-5", className: " bg-gray-200 justify-center items-center flex rectangle-box", datastacked:"no", onClick: null },
 
-    { id: "parent-6", parentDivId: "parent-1", className: "h-r", datastacked:"no", onClick: null },
+    { id: "parent-6", parentDivId: "parent-1", className: "", datastacked:"no", onClick: null },
     { id: "drag-2", parentDivId: "parent-6", className: "bg-[#5691E8] justify-center items-center flex col-span-2 long-rectangle DropTarget", datastacked:"no", onClick: null, draggable:true },
 
-    { id: "ph-5", parentDivId: "parent-1", className: "bg-gray-200  justify-center items-center flex h-32 col-start-2 col-span-2 ph ", newclass: "bg-[#5691E8] sph col-span-2 ph", datastacked:"no", onClick: null },
+    { id: "ph-5", parentDivId: "parent-1", className: "bg-gray-200  justify-center items-center flex col-start-2 col-span-2 ph ", newclass: "bg-[#5691E8] sph col-span-2 ph", datastacked:"no", onClick: null },
   ]);
 
     const updateElement = (id, key, value) => {
@@ -101,7 +101,14 @@ export default function Home() {
     };
 
   function openAddModal(){
-    document.getElementById("addMdl").classList.remove("hidden");
+    var modal = document.getElementById("stackMdl");
+    if (!modal.className.includes("hidden"))
+    {
+      document.getElementById("addMdl-m").classList.remove("hidden");
+    }
+    else{
+      document.getElementById("addMdl").classList.remove("hidden");
+    }    
   }
 
   function openModal(val) {  
@@ -258,170 +265,237 @@ export default function Home() {
         event.target.style.cursor= "";
       }); 
 }, []);
-  return (   
-    <div className="min-h-screen bg-gray-100 p-6" id="cer_cont"> 
-      <div class="content" id="cer_cont1">                  
-          <div className="grid grid-cols-3" >
-            <div className="flex items-center justify-center h-[3rem]" >
-              <button className="absolute w-[40px] h-[40px] left-4 bg-black text-white p-2 text-[14px] rounded-[10px]">
-                <FaArrowLeft className="ml-[5px]"></FaArrowLeft>
-              </button>
+  return (
+    <div className="min-h-screen bg-gray-100 p-6" id="cer_cont">
+      <div class="content" id="cer_cont1">
+        <div className="grid grid-cols-3">
+          <div className="flex items-center justify-center h-[3rem]">
+            <button className="absolute w-[40px] h-[40px] left-4 bg-black text-white p-2 text-[14px] rounded-[10px]">
+              <FaArrowLeft className="ml-[5px]"></FaArrowLeft>
+            </button>
+          </div>
+          <div className="flex items-center justify-center h-[3rem]">
+            <div className="fa-save mr-[10px]">
+              <FaSave className="ml-[3px]"></FaSave>
             </div>
-            <div className="flex items-center justify-center h-[3rem]">
-              <div className="fa-save mr-[10px]"><FaSave className="ml-[3px]"></FaSave></div>  
-              <div className="dlpad mr-[10px]"><label className="flex items-center justify-center mt-[7px]">Digital Launch Pad</label></div>          
-              <div className="fa-save  mr-[10px]"><FaBars className="ml-[3px]"></FaBars></div>  
+            <div className="dlpad mr-[10px]">
+              <label className="flex items-center justify-center mt-[7px]">
+                Digital Launch Pad
+              </label>
             </div>
-            <div className="flex items-center justify-center h-[3rem]" >
-              <button className="bg-green-500 text-white px-4 py-2 rounded-[10px] absolute w-[100px] h-[40px] right-[20px]" ><FaUpload className="ml-[-7px] mt-[4px]"></FaUpload><p className="mt-[-19px] mr-[-17px] mb-[0px] ml-[0px]" >Publish</p> </button>            
+            <div className="fa-save  mr-[10px]">
+              <FaBars className="ml-[3px]"></FaBars>
             </div>
-          </div> 
-          <div className="flex items-center justify-center">            
-            <div className="bg-white text-white p-6 shadow-md scroll relative" >
-              {/* Icon in Top Left */}
-              <button className="text-[14px] rounded-[10px] mt-[-10px] w-[40px] h-[40px] absolute left-4 bg-black text-white p-2 z-1">
-                <FaUser className="text-[20px] ml-[2px]"
-                ></FaUser>
-              </button>
-
-              {/* Grid Layout */} 
-              <div className="w-[1170px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-6 rounded-lg">
-                {renderDivs(null)} 
-              </div>
-
-              {/* Right Control Buttons */} 
-              <div className="absolute top-4 right-4 flex space-x-2">          
-                <div className="bg-black blackbox z-1" >              
-                      <button  className="bg-black text-white p-2 rounded-[7px] ml-[4px] bg-white !text-black mt-[3px]">
-                        <FaDesktop />
-                      </button>
-                    <button className="bg-black text-white p-2 ml-[9px] text-[18px]" >         
-                      <FaTablet />
-                    </button>
-                    <button className="bg-black text-white p-2 ml-[-5px] text-[18px]" >         
-                      <FaMobile />
-                    </button>
-                </div> 
-              </div>
-              <div id="addMdl" className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2 hidden">
-                  <div>
-                    <div className="single">
-                        <FaPlus className="mt-[20px] ml-[20px]" ></FaPlus>
-                    </div>
-                    <span className="absolute top-[74px] left-[17px]" >Single</span>
-                  </div>
-                  <div>
-                    <div className="stack">
-                      <div className="stack-inner"> 
-                      <FaPlus className="mt-[24px] ml-[24px]" ></FaPlus>
-                      </div>                     
-                    </div>
-                    <span className="absolute top-[74px] left-[102px]" >Stack</span>
-                  </div>
-                  <div>
-                    <div className="single !left-[160px]" >
-                      <span className="t-text flex items-center justify-center">T</span>
-                    </div>
-                    <span className="absolute top-[74px] left-[170px]" >Note</span>
-                  </div>
-                  <div>
-                    <div className="divider">
-                      <div className="t-text-divider"><span className="t-text flex items-center justify-center w-[50px] h-[25px]">T</span></div>
-                    </div>
-                    <span className="absolute top-[74px] left-[237px]" >Divider</span>
-                  </div>                
-              </div>
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
-                  <div className="addbox" onClick={openAddModal}> 
-                      <p className="flex items-center justify-center" ><FontAwesomeIcon icon={faTableCells} className="w-22px h-22px" />&nbsp;&nbsp;<span>Add</span></p> 
-                  </div>
-                  <div className="half-circle m-[6px]" ><FontAwesomeIcon className="mb-[4px] text-black p-[6px]" icon={faCircleHalfStroke} /></div>
-                  <div className="text-[30px]" ><FaImages className="ml-[20px]" /></div>
-                  <div>
-                    <div className="rainbow ml-[20px]"></div>
-                  </div>                                
-              </div>            
-            </div>
-          </div>          
-        </div>     
-        <div className="flex items-center justify-center" >   
-            <div id="stackMdl" className={` text-white p-6 shadow-md !top-[207px] scroll  absolute flex items-center justify-center bg-black bg-opacity-50 hidden`} >
-                <div ref={parentRef} className="bg-white top-[94px] w-[1384px] h-[716px] rounded-t-[28px]  shadow-lg w-full p-6 relative" id="mdl">
-              
-              {/* Header */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center m-[50px]">
-                  <input
-                    className="border border-gray-300 px-4 py-2 w-[191px] h-[48px] rounded-[10px]"
-                    type="text"
-                    placeholder="Add title"
-                  />
-                  <button
-                    id="btnCloseMdl"
-                    className="bg-black text-white p-2 text-lg w-[48px] h-[48px] rounded-[10px]" 
-                    onClick={() => closeStack()}>
-                    <FaTimes className="ml-[7px]" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Grid Section */}
-              <div className="grid grid-cols-6 gap-2 m-[50px]" id="parent-100">
-                {modalDivs.map((div) => (                 
-                    <div
-                      key={div.id}
-                      id={div.id}
-                      className={div.newclass || div.className}
-                      stackclassname={div.stackclassname}
-                      stackparentid={div.stackparentid}
-                      newclass={div.newclass || ""}
-                      data-original-parent={div["data-original-parent"]}
-                      draggable={true}
-                    ></div>                                
-                ))}
-              </div>
-
-              <div id="addMdl" className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2">
-                  <div>
-                    <div className="single">
-                        <FaPlus className="mt-[20px] ml-[20px]" ></FaPlus>
-                    </div>
-                    <span className="absolute top-[74px] left-[17px]" >Single</span>
-                  </div>
-                  <div>
-                    <div className="stack">
-                      <div className="stack-inner"> 
-                      <FaPlus className="mt-[24px] ml-[24px]" ></FaPlus>
-                      </div>                     
-                    </div>
-                    <span className="absolute top-[74px] left-[102px]" >Stack</span>
-                  </div>
-                  <div>
-                    <div className="single !left-[160px]" >
-                      <span className="t-text flex items-center justify-center">T</span>
-                    </div>
-                    <span className="absolute top-[74px] left-[170px]" >Note</span>
-                  </div>
-                  <div>
-                    <div className="divider">
-                      <div className="t-text-divider"><span className="t-text flex items-center justify-center w-[50px] h-[25px]">T</span></div>
-                    </div>
-                    <span className="absolute top-[74px] left-[237px]" >Divider</span>
-                  </div>                
-              </div>
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
-                  <div className="addbox" onClick={openAddModal}> 
-                      <p className="flex items-center justify-center" ><FontAwesomeIcon icon={faTableCells} className="w-22px h-22px" />&nbsp;&nbsp;<span>Add</span></p> 
-                  </div>
-                  <div className="half-circle m-[6px]" ><FontAwesomeIcon className="mb-[4px] text-black p-[6px]" icon={faCircleHalfStroke} /></div>
-                  <div><FaImages className="ml-[20px] w-[30px] h-[24px]" /></div>
-                  <div>
-                    <div className="rainbow ml-[20px]"></div>
-                  </div>                                
-              </div> 
-              </div>
-            </div> 
+          </div>
+          <div className="flex items-center justify-center h-[3rem]">
+            <button className="bg-green-500 text-white px-4 py-2 rounded-[10px] absolute w-[100px] h-[40px] right-[20px]">
+              <FaUpload className="ml-[-7px] mt-[4px]"></FaUpload>
+              <p className="mt-[-19px] mr-[-17px] mb-[0px] ml-[0px]">
+                Publish
+              </p>{" "}
+            </button>
+          </div>
         </div>
-    </div>     
+        <div className="flex items-center justify-center">
+          <div className="bg-white text-white p-6 shadow-md scroll relative">
+            {/* Icon in Top Left */}
+            <button className="text-[14px] rounded-[10px] mt-[-10px] w-[40px] h-[40px] absolute left-4 bg-black text-white p-2 z-[1000]">
+              <FaUser className="text-[20px] ml-[2px]"></FaUser>
+            </button>
+
+            {/* Grid Layout */}
+            <div className="w-[1170px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-6 rounded-lg">
+              {renderDivs(null)}
+            </div>
+
+            {/* Right Control Buttons */}
+            <div className="absolute top-4 right-4 flex space-x-2">
+              <div className="bg-black blackbox z-[1000]">
+                <button className="bg-black text-white p-2 rounded-[7px] ml-[4px] bg-white !text-black mt-[3px]">
+                  <FaDesktop />
+                </button>
+                <button className="bg-black text-white p-2 ml-[9px] text-[18px]">
+                  <FaTablet />
+                </button>
+                <button className="bg-black text-white p-2 ml-[-5px] text-[18px]">
+                  <FaMobile />
+                </button>
+              </div>
+            </div>
+            <div
+              id="addMdl"
+              className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2 hidden"
+            >
+              <div>
+                <div className="single">
+                  <FaPlus className="mt-[21px] ml-[21px]"></FaPlus>
+                </div>
+                <span className="absolute top-[74px] left-[17px]">Single</span>
+              </div>
+              <div>
+                <div className="stack">
+                  <div className="stack-inner">
+                    <FaPlus className="mt-[24px] ml-[24px]"></FaPlus>
+                  </div>
+                </div>
+                <span className="absolute top-[74px] left-[91px]">Stack</span>
+              </div>
+              <div>
+                <div className="single !left-[151px]">
+                  <span className="t-text flex items-center justify-center">
+                    T
+                  </span>
+                </div>
+                <span className="absolute top-[74px] left-[164px]">Note</span>
+              </div>
+              <div>
+                <div className="divider">
+                  <div className="t-text-divider">
+                    <span className="t-text flex items-center justify-center w-[50px] h-[25px]">
+                      T
+                    </span>
+                  </div>
+                </div>
+                <span className="absolute top-[74px] left-[225px]">
+                  Divider
+                </span>
+              </div>
+            </div>
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
+              <div className="addbox" onClick={openAddModal}>
+                <p className="flex items-center justify-center">
+                  <FontAwesomeIcon
+                    icon={faTableCells}
+                    className="w-22px h-22px"
+                  />
+                  &nbsp;&nbsp;<span>Add</span>
+                </p>
+              </div>
+              <div className="half-circle m-[6px]">
+                <FontAwesomeIcon
+                  className="mb-[4px] text-black p-[6px]"
+                  icon={faCircleHalfStroke}
+                />
+              </div>
+              <div className="text-[30px]">
+                <FaImages className="ml-[20px]" />
+              </div>
+              <div>
+                <div className="rainbow ml-[20px]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center justify-center">
+        <div
+          id="stackMdl"
+          className={` text-white p-6 shadow-md !top-[207px] scroll  absolute flex items-center justify-center bg-black bg-opacity-50 hidden`}
+        >
+          <div
+            ref={parentRef}
+            className="bg-white top-[94px] w-[1384px] h-[716px] rounded-t-[28px]  shadow-lg w-full p-6 relative"
+            id="mdl"
+          >
+            {/* Header */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center m-[50px]">
+                <input
+                  className="border border-gray-300 px-4 py-2 w-[191px] h-[48px] rounded-[10px]"
+                  type="text"
+                  placeholder="Add title"
+                />
+                <button
+                  id="btnCloseMdl"
+                  className="bg-black text-white p-2 text-lg w-[48px] h-[48px] rounded-[10px]"
+                  onClick={() => closeStack()}
+                >
+                  <FaTimes className="ml-[7px]" />
+                </button>
+              </div>
+            </div>
+
+            {/* Grid Section */}
+            <div className=" m-[50px]" id="parent-100">
+              {modalDivs.map((div) => (
+                <div
+                  key={div.id}
+                  id={div.id}
+                  className={div.newclass || div.className}
+                  stackclassname={div.stackclassname}
+                  stackparentid={div.stackparentid}
+                  newclass={div.newclass || ""}
+                  data-original-parent={div["data-original-parent"]}
+                  draggable={true}
+                ></div>
+              ))}
+            </div>
+
+            <div
+              id="addMdl-m"
+              className="absolute add-modal bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 flex items-center space-x-2 hidden"
+            >
+              <div>
+                <div className="single">
+                  <FaPlus className="mt-[21px] ml-[21px]"></FaPlus>
+                </div>
+                <span className="absolute top-[74px] left-[17px]">Single</span>
+              </div>
+              <div>
+                <div className="stack">
+                  <div className="stack-inner">
+                    <FaPlus className="mt-[24px] ml-[24px]"></FaPlus>
+                  </div>
+                </div>
+                <span className="absolute top-[74px] left-[91px]">Stack</span>
+              </div>
+              <div>
+                <div className="single !left-[151px]">
+                  <span className="t-text flex items-center justify-center">
+                    T
+                  </span>
+                </div>
+                <span className="absolute top-[74px] left-[164px]">Note</span>
+              </div>
+              <div>
+                <div className="divider">
+                  <div className="t-text-divider">
+                    <span className="t-text flex items-center justify-center w-[50px] h-[25px]">
+                      T
+                    </span>
+                  </div>
+                </div>
+                <span className="absolute top-[74px] left-[225px]">
+                  Divider
+                </span>
+              </div>
+            </div>
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full flex items-center space-x-2 add-container">
+              <div className="addbox" onClick={openAddModal}>
+                <p className="flex items-center justify-center">
+                  <FontAwesomeIcon
+                    icon={faTableCells}
+                    className="w-22px h-22px"
+                  />
+                  &nbsp;&nbsp;<span>Add</span>
+                </p>
+              </div>
+              <div className="half-circle m-[6px]">
+                <FontAwesomeIcon
+                  className="mb-[4px] text-black p-[6px]"
+                  icon={faCircleHalfStroke}
+                />
+              </div>
+              <div>
+                <FaImages className="ml-[20px] w-[30px] h-[24px]" />
+              </div>
+              <div>
+                <div className="rainbow ml-[20px]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
